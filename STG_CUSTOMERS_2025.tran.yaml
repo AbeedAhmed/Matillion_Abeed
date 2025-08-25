@@ -1,0 +1,89 @@
+type: "transformation"
+version: "1.0"
+pipeline:
+  components:
+    Customers:
+      type: "table-input"
+      parameters:
+        componentName: "Customers"
+        database: "MATTLION_ABEED"
+        schema: "PUBLIC"
+        targetTable: "Customers"
+        columnNames:
+        - "CustomerID"
+        - "LastName"
+        - "FirstName"
+        - "BirthDate"
+        - "Gender"
+        - "ParticipantType"
+        - "RegionID"
+        - "MaritalStatus"
+        timeOffset:
+    Calculator:
+      type: "calculator"
+      sources:
+      - "Customers"
+      parameters:
+        componentName: "Calculator"
+        includeInputColumns: "No"
+        calculations:
+        - - "\"FirstName\""
+          - "FIRST_NAME"
+        - - "\"LastName\""
+          - "LAST_ NAME"
+        - - "CONCAT(\"FirstName\",' ', \"LastName\")"
+          - "FULL_NAME"
+        - - "YEAR(\"BirthDate\")"
+          - "YEAR_BIRTH_DATE"
+        - - "MONTH(\"BirthDate\")"
+          - "MONTH_BIRTH_DATE"
+        - - "DAY(\"BirthDate\")"
+          - "DAY_BIRTH_DATE"
+    Aggregate:
+      type: "aggregate"
+      sources:
+      - "Calculator"
+      parameters:
+        componentName: "Aggregate"
+        groupings:
+        - "YEAR_BIRTH_DATE"
+        - "MONTH_BIRTH_DATE"
+        - "DAY_BIRTH_DATE"
+        aggregations:
+        - - "FULL_NAME"
+          - "Count Distinct"
+        groupingType: "Group By"
+    Rename:
+      type: "rename"
+      sources:
+      - "Aggregate"
+      parameters:
+        componentName: "Rename"
+        columnMapping:
+        - - "count_distinct_FULL_NAME"
+          - "TOTAL_CUSTOMER"
+        - - "MONTH_BIRTH_DATE"
+          - "JOINING_MONTH"
+        includeInputColumns: "No"
+design:
+  components:
+    Customers:
+      position:
+        x: 0
+        "y": 0
+      tempMetlId: 1
+    Calculator:
+      position:
+        x: 160
+        "y": 0
+      tempMetlId: 2
+    Aggregate:
+      position:
+        x: 320
+        "y": 0
+      tempMetlId: 3
+    Rename:
+      position:
+        x: 480
+        "y": 0
+      tempMetlId: 4

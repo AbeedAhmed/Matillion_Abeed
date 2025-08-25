@@ -7,6 +7,7 @@ pipeline:
       transitions:
         unconditional:
         - "Create Table 2 2"
+        - "SQL Script"
       parameters:
         componentName: "Start"
     S3 Load:
@@ -19,18 +20,18 @@ pipeline:
         pattern: ".*\\.csv"
         encryption: "S3 Encryption"
         warehouse: "COMPUTE_WH"
-        database: "MATILLION_DATABASE"
+        database: "MATTLION_ABEED"
         schema: "PUBLIC"
-        targetTable: "Customer_01"
+        targetTable: "Customers"
         loadColumns:
-        - " CustomerID"
-        - "BirthDate"
-        - "FirstName"
-        - "Gender"
+        - "CustomerID"
         - "LastName"
-        - "MaritalStatus"
+        - "FirstName"
+        - "BirthDate"
+        - "Gender"
         - "ParticipantType"
         - "RegionID"
+        - "MaritalStatus"
         format: "[Custom]"
         fileType: "CSV"
         compression: "AUTO"
@@ -66,12 +67,12 @@ pipeline:
       parameters:
         componentName: "Create Table 2 2"
         createMethod: "Replace"
-        database: "MATILLION_DATABASE"
+        database: "MATTLION_ABEED"
         schema: "PUBLIC"
-        table: "Customer_01"
+        table: "Customers"
         snowflakeTableType: "Permanent"
         columns:
-        - - " CustomerID"
+        - - "CustomerID"
           - "NUMBER"
           - ""
           - ""
@@ -99,7 +100,7 @@ pipeline:
           - ""
           - ""
         - - "BirthDate"
-          - "VARCHAR"
+          - "DATE"
           - "20"
           - ""
           - ""
@@ -151,6 +152,18 @@ pipeline:
       postProcessing:
         updateOutputMessage:
         updateScalarVariables:
+    SQL Script:
+      type: "sql-executor"
+      parameters:
+        componentName: "SQL Script"
+        scriptLocation: "Component"
+        declareSqlVariables: "Include selected"
+        variablesToInclude:
+        sqlScript: "DELETE FROM MATTLION_ABEED.PUBLIC.\"Customers\" WHERE \"MaritalStatus\"\
+          \ = 'COMPANY'"
+      postProcessing:
+        updateOutputMessage:
+        updateScalarVariables:
 design:
   components:
     Start:
@@ -168,3 +181,8 @@ design:
         x: 130
         "y": -10
       tempMetlId: 5
+    SQL Script:
+      position:
+        x: 180
+        "y": -110
+      tempMetlId: 6
